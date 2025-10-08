@@ -1,0 +1,99 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(const BMICalculatorApp());
+
+class BMICalculatorApp extends StatelessWidget {
+  const BMICalculatorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: BMICalculator(),
+    );
+  }
+}
+
+class BMICalculator extends StatefulWidget {
+  const BMICalculator({super.key});
+
+  @override
+  State<BMICalculator> createState() => _BMICalculatorState();
+}
+
+class _BMICalculatorState extends State<BMICalculator> {
+  final TextEditingController weightController = TextEditingController();
+  final TextEditingController heightController = TextEditingController();
+
+  String result = "";
+
+  void calculateBMI() {
+    final double? weight = double.tryParse(weightController.text);
+    final double? height = double.tryParse(heightController.text);
+
+    if (weight != null && height != null && height > 0) {
+      final double bmi = weight / ((height / 100) * (height / 100));
+      String category;
+
+      if (bmi < 18.5) {
+        category = "น้ำหนักน้อยเกินไป";
+      } else if (bmi < 24.9) {
+        category = "น้ำหนักปกติ";
+      } else if (bmi < 29.9) {
+        category = "น้ำหนักเกิน";
+      } else {
+        category = "โรคอ้วน";
+      }
+
+      setState(() {
+        result = "ค่า BMI: ${bmi.toStringAsFixed(2)}\nผลลัพธ์: $category";
+      });
+    } else {
+      setState(() {
+        result = "กรุณากรอกค่าน้ำหนักและส่วนสูงให้ถูกต้อง";
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("BMI Calculator")),
+      body: Padding(
+        padding: const EdgeInsets.all(50),
+        child: Column(
+          children: [
+            TextField(
+              controller: weightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "น้ำหนัก (กิโลกรัม)",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: heightController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "ส่วนสูง (เซนติเมตร)",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: calculateBMI,
+              child: const Text("คำนวณ BMI"),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              result,
+              style: const TextStyle(fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
